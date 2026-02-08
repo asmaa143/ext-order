@@ -2,14 +2,18 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumHelpers;
+
 enum PaymentStatusEnum: string
 {
+    use EnumHelpers;
     case PENDING = 'pending';
     case PROCESSING = 'processing';
     case SUCCESSFUL = 'successful';
     case FAILED = 'failed';
     case REFUNDED = 'refunded';
     case CANCELLED = 'cancelled';
+
 
     public function label(): string
     {

@@ -2,12 +2,16 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumHelpers;
+
 enum PaymentMethodEnum: string
 {
+    use EnumHelpers;
     case CREDIT_CARD = 'credit_card';
     case PAYPAL = 'paypal';
     case BANK_TRANSFER = 'bank_transfer';
     case CASH_ON_DELIVERY = 'cash_on_delivery';
+
 
     public function label(): string
     {

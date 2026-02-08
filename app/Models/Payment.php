@@ -38,4 +38,61 @@ class Payment extends Model
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
+
+    /**
+     * Scope a query to only include payments of a given status
+     */
+    public function scopeStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope a query to only include payments for a specific order
+     */
+    public function scopeForOrder($query, int $orderId)
+    {
+        return $query->where('order_id', $orderId);
+    }
+
+    /**
+     * Mark payment as successful
+     */
+    public function markAsSuccessful(string $transactionId, array $gatewayResponse = []): bool
+    {
+        $this->status = PaymentStatusEnum::SUCCESSFUL;
+        $this->transaction_id = $transactionId;
+        $this->gateway_response = $gatewayResponse;
+        $this->processed_at = now();
+
+        return $this->save();
+    }
+
+    /**
+     * Mark payment as failed
+     */
+    public function markAsFailed(array $gatewayResponse = []): bool
+    {
+        $this->status = PaymentStatusEnum::FAILED;
+        $this->gateway_response = $gatewayResponse;
+        $this->processed_at = now();
+
+        return $this->save();
+    }
+
+    /**
+     * Check if payment can be processed
+     */
+    public function canBeProcessed(): bool
+    {
+        return $this->status === PaymentStatusEnum::PENDING;
+    }
+
+    /**
+     * Check if payment was successful
+     */
+    public function isSuccessful(): bool
+    {
+        return $this->status === PaymentStatusEnum::SUCCESSFUL;
+    }
 }

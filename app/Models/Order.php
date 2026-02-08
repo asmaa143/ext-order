@@ -58,4 +58,49 @@ class Order extends Model
             }
         });
     }
+
+    /**
+     * Scope a query to only include orders of a given status
+     */
+    public function scopeStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope a query to only include orders for a specific user
+     */
+    public function scopeForUser($query, int $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * Check if order can be paid
+     */
+    public function canBePaid(): bool
+    {
+        return $this->status === OrderStatusEnum::CONFIRMED;
+    }
+
+    /**
+     * Check if order can be updated
+     */
+    public function canBeUpdated(): bool
+    {
+        return in_array($this->status, [
+            OrderStatusEnum::PENDING,
+            OrderStatusEnum::CONFIRMED,
+        ]);
+    }
+
+
+    /**
+     * Update order status
+     */
+    public function updateStatus(OrderStatusEnum $status): bool
+    {
+        $this->status = $status;
+        return $this->save();
+    }
 }
